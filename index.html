@@ -111,24 +111,26 @@
                         howlong = event.end.date;
                     }
                     var location = event.location;
-                    todaysEvents[i]['description'] == event.summary;
+                    todaysEvents[i]=[];
+                    todaysEvents[i]['description'] = event.summary;
                     todaysEvents[i]['start'] = when;
                     todaysEvents[i]['end'] = howlong;
                     todaysEvents[i]['location']= location;
                     var eventStart = Date.parse(event.start.dateTime);
                     var curTime = Date.parse(Date());
-                    /**
-                      if (j=0) {
+                      console.log(eventStart);
+                      console.log(curTime);
+                      console.log(j);
+                    if (j==0) {
                         if(eventStart>curTime){
-                            j=1;
-                            nextEvent['description'] = event.summary;
-                            nextEvent['start'] = when;
-                            nextEvent['end'] = howlong;
-                            nextEvent['location']= location;
+                        j=1;
+                        nextEvent['description'] = event.summary;
+                        nextEvent['start'] = when;
+                        nextEvent['end'] = howlong;
+                        nextEvent['location']= location;
                         }
-                    }**/
+                    }
                     appendPre(event.summary + ' (' + when + ')' + location + howlong); 
-                    console.log(nextEvent);
                     }
                 } else {
                     appendPre('No upcoming events found.');
