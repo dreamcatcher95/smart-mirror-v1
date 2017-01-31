@@ -11,72 +11,378 @@
         <!-- CSS -->
         <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="bootstrap/dist/fonts/glyphicons-halflings-regular.ttf">
+        <link rel="stylesheet" href="font/weathericons-regular-webfont.ttf">
+        <link rel="stylesheet" href="css/weather-icons.min.css">
+        <link rel="stylesheet" href="css/weather-icons-wind.min.css">
+        <link href="https://fonts.googleapis.com/css?family=Overlock" rel="stylesheet">
         <style>
             body{
-                background-color: silver;
+                background-color: black;
+                color: white;
+                font-family: 'Overlock', cursive; 
+            }
+            #time{
+                font-size: 4em;
+            }
+            .currentWeather{
+                text-align: right;
+            }
+            #weatherCity{
+                font-size: 1.4em;
+            }
+            #weatherTime{
+                font-size:1.1em;
+            }
+            #weatherCondition{
+                font-size: 2.3em;
+            }
+            #weatherTemp{
+                font-size: 2.1em;
+            }
+            #weatherHumidity{
+                font-size: 1.7em;
             }
             .row {
                 margin:0;
                 padding:0;
             }
-            .col-md-6{
+            .icon{ 
+                float: left;
+                font-size:1.5em;
+            }
+            .hourlyTime {
+                font-size: 1.6em;
+                text-align: center;
+            }
+            .hourlyC
+            .hourlyBox{
+                padding-left: 5px;
+            }
+            .col-sm-6{
                 height:inherit;
-                background-color: rgba(222,24,41,.6);
-                border: solid;
-                border-color: aqua;
+                
                 
             }
-            .col-md-12{
+            .col-sm-12{
                 height:inherit;
-                background-color: rgba(224,24,41,.6);
-                border: solid;
-                border-color: aqua;
+                
             }
-            .col-md-2{
+            .col-sm-2{
                 height:inherit;
-                background-color: rgba(224,24,41,.6);
+                border-width: thin;
                 border: solid;
-                border-color: aqua;
+                border-color: white;
+                
+
             }
-            .col-md-5{
+            .col-sm-5{
                 height:inherit;
-                background-color: rgba(224,24,41,.6);
-                border: solid;
-                border-color: aqua;
+                
+            
             }
-            .col-md-7{
+            .col-sm-7{
                 height:inherit;
-                background-color: rgba(224,24,41,.6);
-                border: solid;
-                border-color: aqua;
+              
 
             }
         </style>
+        <script src="jquery/dist/jquery.min.js"></script>
+        <script src="bootstrap/dist/js/bootstrap.min.js"></script>
         
+        <script type="text/javascript">
+          
+            //hourlyWeatherCall();
+            //currentWeatherCall();
+                function hourlyWeatherCall(){
+                    $.ajax({
+                        url: "http://api.wunderground.com/api/b368a60727ec442f/hourly/q/pws:KGAATLAN214.json",
+                        dataType : "jsonp",
+                        success : function(parsed_json) {
+                            var hrforecast = parsed_json['hourly_forecast'];
+                            var f =0;
+                            for (index in hrforecast) {
+                                f = f+1;
+                                if (f<7){
+                                    var hrHour = Number(hrforecast[index]['FCTTIME']['hour']);
+                                    if (hrHour == 0) {
+                                        hrHour =12;
+                                    } else if (hrHour>12){
+                                        hrHour = hrHour -12;
+                                    }
+                                    var hrampm = hrforecast[index]['FCTTIME']['ampm'];
+                                    var hrTemp = hrforecast[index]['feelslike']['english'];
+                                    var hrCondition = hrforecast[index]['condition'];
+                                    var hriconurl = hrforecast[index]['icon_url'];
+                                    hriconurl = hriconurl.split("/");
+                                    hriconurl = hriconurl[hriconurl.length-1];
+                                    hriconurl = hriconurl.split(".");
+                                    hriconurl = hriconurl[0];
+                                    var hrPop = hrforecast[index]['pop'];
+                                
+                                    curElements = ['hourlytime' + f,'hourlytemp' + f,'hourlycondition' + f,'hourlyicon' + f, 'hourlypop' + f];
+                                                                        
+                                    document.getElementById(curElements[0]).innerHTML = hrHour + hrampm
+                                    document.getElementById(curElements[1]).innerHTML = 'Feels like: ' + hrTemp + '°F'
+                                    document.getElementById(curElements[2]).innerHTML = hrCondition
+                                    //document.getElementById(curElements[3]).innerHTML = hriconurl
+                                    document.getElementById(curElements[4]).innerHTML = 'Chance of Precip: ' + hrPop + '%'
+                                }
+                            } 
+                        }
+                    }); 
+                };
+              
+                 
+                function forecastWeatherCall() {
+                    $.ajax({
+                        url: "http://api.wunderground.com/api/b368a60727ec442f/forecast/q/pws:KGAATLAN214.json",
+                        dataType : "jsonp",
+                        success : function(parsed_json) {
+                            var thrforecast = parsed_json['forecast']['simpleforecast']['forecastday'];
+                            console.log(thrforecast);
+                            for (index in thrforecast) {
+                                //date
+                                var thrday = thrforecast[index]['date']['weekday_short']+".";
+                                var thrmonth = thrforecast[index]['date']['monthname_short']+".";
+                                var thrdate = thrforecast[index]['date']['day'];
+                                //condition
+                                var thrcondition = thrforecast[index]['conditions'];
+                                //hightemp
+                                var thrhigh = thrforecast[index]['high']['fahrenheit'];
+                                //lowtemp
+                                var thrlow = thrforecast[index]['low']['fahrenheit'];
+                                //humidity
+                                var thrhumidity = thrforecast[index]['avehumidity'];
+                                //icon
+                                var thriconurl = thrforecast[index]['icon_url'];
+                                thriconurl = thriconurl.split("/");
+                                thriconurl = thriconurl[6];
+                                thriconurl = thriconurl.split(".");
+                                thriconurl = thriconurl[0];
+                                //chance of precip
+                                var thrpop = thrforecast[index]['pop'];
+                            } 
+                        }
+                    }); 
+                };
+                
+                function currentWeatherCall() {
+                    $.ajax({
+                        url: "http://api.wunderground.com/api/b368a60727ec442f/conditions/q/pws:KGAATLAN214.json",
+                        dataType : "jsonp",
+                        success : function(parsed_json) {
+                            var curforecast = parsed_json['current_observation'];
+                            //icon url
+                            var hriconurl = curforecast['icon_url'];
+                            hriconurl = hriconurl.split("/");
+                            hriconurl = hriconurl[hriconurl.length-1];
+                            hriconurl = hriconurl.split(".");
+                            hriconurl = hriconurl[0];
+                            document.getElementById('weatherCity').innerHTML = curforecast['display_location']['full'] + " | "+ curforecast['observation_time'];
+                            document.getElementById('weatherCondition').innerHTML = curforecast['weather'];
+                            document.getElementById('weatherTemp').innerHTML = 'Feels like: ' + curforecast['feelslike_f']+'°F';
+                            document.getElementById('weatherHumidity').innerHTML =
+                            'Humidity: ' + curforecast['relative_humidity'];
+                            //document.getElementById('weatherIcon').innerHTML = hriconurl;
+                        
+                        }
+                    }); 
+                };
+                
+                //Google Calendar
+                
+                
+                
+                
+                
+                
+            function startTime() {
+                var today = new Date();
+                var h = today.getHours();
+                var m = today.getMinutes();
+                var s = today.getSeconds();
+                var monthArr = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'];
+                var dayArr = ['Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat', 'Sun']
+                var month =today.getMonth();
+                var date = today.getDate();
+                var year = today.getYear()-100+2000;
+                var day = today.getDay();
+                
+                m = checkTime(m);
+                s = checkTime(s);
+                var ampmNow = ' AM'; 
+                if (h>12){
+                    h=h-12;
+                    ampmNow = ' PM';
+                }
+                if(h==0){
+                    h=12;
+                }
+                
+                document.getElementById('time').innerHTML =
+                h + ":" + m + ":" + s + ampmNow + '</br>' + dayArr[day] + ', ' + monthArr[month] + '. '+ date + ', ' + year;
+                var t = setTimeout(startTime, 500);
+                if(m==1 & s<1){
+                    hourlyWeatherCall();
+                }
+                if(m % 15 == 0 & s<1){
+                    currentWeatherCall();
+                }
+                if(h==6 & m == 1 & s<1){
+                    forecastWeatherCall();
+                }
+            }
+            function checkTime(i) {
+                if (i < 10) {i = "0" + i};  // add zero in front of numbers < 10
+                return i;
+               
+            }
+            
+
+        </script>
+        <script>
+            
+        </script>
     </head>
 
-    <body>
-       
+    <body onload="startTime()">
+        
             
                 <div class="row" style="height:10vh;">
-                    <div class="col-md-6">Date and Time</div>
+                    <div id="time" class="col-sm-6"></div>
                     
-                    <div class="col-md-6">Weather</div>
+                    <div class="col-sm-6 currentWeather" style="vertical-align:middle;">
+                    
+                        
+                        <div id="weatherCondition">Cloudy</div>
+                        <div id="weatherTemp">77F</div>
+                        <div id="weatherHumidity">10%</div>
+                        <!--<div id="weatherIcon">Clouds</div> -->
+                        <div id="weatherCity">Nola | Last Updated on June 27, 5:27 PM PDT</div>
+                    
+                    </div>
                 </div>
-                <div class="row" style="height: 7vh">
-                    <div class="col-md-2">Hourly Weather</div>
-                    <div class="col-md-2">Hourly Weather</div>
-                    <div class="col-md-2">Hourly Weather</div>
-                    <div class="col-md-2">Hourly Weather</div>
-                    <div class="col-md-2">Hourly Weather</div>
-                    <div class="col-md-2">Hourly Weather</div>
+                <div class="row" style="height: 9vh;">
+                    <div id="hourly1" class="col-sm-2 hourlyBox">
+                        <div id="hourlytime1" class="row hourlyTime">
+                        Time 
+                        </div>
+                        <div  id="hourlycondition1" class="row hourlyCondition">
+                        Condition
+                        </div>
+                        <div id="hourlytemp1" class="row hourlyTemp">
+                        Temperature
+                        </div>
+                        <div  id="hourlypop1" class="row hourlyPop">
+                        PoP
+                        </div>
+                        <div  id="hourlyicon1" class="row hourlyIcon">
+                        <i class="icon wi wi-night-rain" style=""></i>
+                        </div>
+                    </div>
+                    <div id="hourly2" class="col-sm-2 hourlyBox">
+                        <div id="hourlytime2" class="row hourlyTime">
+                        Time 
+                        </div>
+                        <div  id="hourlycondition2" class="row hourlyCondition">
+                        Condition
+                        </div>
+                        <div id="hourlytemp2" class="row hourlyTemp">
+                        Temperature
+                        </div>
+                        <div  id="hourlypop2" class="row hourlyPop">
+                        PoP
+                        </div>
+                        <div  id="hourlyicon2" class="row hourlyIcon">
+                        <i class="icon wi wi-night-rain" style=""></i>
+                        </div>
+                    </div>
+                    <div id="hourly3" class="col-sm-2 hourlyBox">
+                        <div id="hourlytime3" class="row hourlyTime">
+                        Time 
+                        </div>
+                        <div  id="hourlycondition3" class="row hourlyCondition">
+                        Condition
+                        </div>
+                        <div id="hourlytemp3" class="row hourlyTemp">
+                        Temperature
+                        </div>
+                        <div  id="hourlypop3" class="row hourlyPop">
+                        PoP
+                        </div>
+                        <div  id="hourlyicon3" class="row hourlyIcon">
+                        <i class="icon wi wi-night-rain" style=""></i>
+                        </div>
+                    </div>
+                    <div id="hourly4" class="col-sm-2 hourlyBox">
+                        <div id="hourlytime4" class="row hourlyTime">
+                        Time 
+                        </div>
+                        <div  id="hourlycondition4" class="row hourlyCondition">
+                        Condition
+                        </div>
+                        <div id="hourlytemp4" class="row hourlyTemp">
+                        Temperature
+                        </div>
+                        <div  id="hourlypop4" class="row hourlyPop">
+                        PoP
+                        </div>
+                        <div  id="hourlyicon4" class="row hourlyIcon">
+                        <i class="icon wi wi-night-rain" style=""></i>
+                        </div>
+                    </div>
+                    <div id="hourly5" class="col-sm-2 hourlyBox">
+                        <div id="hourlytime5" class="row hourlyTime">
+                        Time 
+                        </div>
+                        <div  id="hourlycondition5" class="row hourlyCondition">
+                        Condition
+                        </div>
+                        <div id="hourlytemp5" class="row hourlyTemp">
+                        Temperature
+                        </div>
+                        <div  id="hourlypop5" class="row hourlyPop">
+                        PoP
+                        </div>
+                        <div  id="hourlyicon5" class="row hourlyIcon">
+                        <i class="icon wi wi-night-rain" style=""></i>
+                        </div>
+                    </div>
+                    <div id="hourly6" class="col-sm-2 hourlyBox">
+                        <div id="hourlytime6" class="row hourlyTime">
+                        Time 
+                        </div>
+                        <div  id="hourlycondition6" class="row hourlyCondition">
+                        Condition
+                        </div>
+                        <div id="hourlytemp6" class="row hourlyTemp">
+                        Temperature
+                        </div>
+                        <div  id="hourlypop6" class="row hourlyPop">
+                        PoP
+                        </div>
+                        <div  id="hourlyicon6" class="row hourlyIcon">
+                        <i class="icon wi wi-night-rain" style=""></i>
+                        </div>
+                    </div>
+                    
                 </div>
-                <div class="row" style="height:57vh;">
+                <div class="row" style="height:54vh;">
 
                 </div>
-                <div class="row" style="height:26vh;">
-                  <div class="col-md-5">7 Day Forecast</div>
-                  <div class="col-md-5" style="float:right;height:26vh;">Todays Events</div>
+                <div class="row" style="height:27vh;">
+                    <div class="col-sm-5">
+                    <div id="day1" class="row dailyforecast" style="height:9vh;">
+                    Thurs, Jan. 25, 2017
+                    </div>
+                    <div id="day1" class="row dailyforecast" style="height:9vh;">
+                    Thurs, Jan. 26, 2017
+                    </div>
+                    <div id="day1" class="row dailyforecast" style="height:9vh;">
+                    Thurs, Jan. 26, 2017
+                    </div>
+                    </div>
+                  <div class="col-sm-5" style="float:right;height:27vh;">Todays Events</div>
                 </div>
                 
            

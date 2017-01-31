@@ -160,7 +160,7 @@
     </head>
 
     <body>
-        <button id="CurrentWeather">Test &#x2109;</button>
+        <button id="HourlyWeather">Test &#x2109;</button>
         
         <button id="RefreshCalendar" onclick="listUpcomingEvents()">CalTest &#x2109;</button>
             <div id="authorize-div" style="display: none">
@@ -184,7 +184,9 @@
                         success : function(parsed_json) {
                             var hrforecast = parsed_json['hourly_forecast'];
                             console.log(hrforecast);
+                            var f =0;
                             for (index in hrforecast) {
+                                f = f+1;
                                 var hrHour = Number(hrforecast[index]['FCTTIME']['hour']);
                                 if (hrHour == 0) {
                                     hrHour =12;
@@ -196,9 +198,34 @@
                                 var hrCondition = hrforecast[index]['condition'];
                                 var hriconurl = hrforecast[index]['icon_url'];
                                 hriconurl = hriconurl.split("/");
-                                hriconurl = hriconurl[6];
+                                hriconurl = hriconurl[hriconurl.length-1];
                                 hriconurl = hriconurl.split(".");
                                 hriconurl = hriconurl[0];
+                                var hrPop = hrforecast[index]['pop'];
+                                var hourlyWeather = new Array();
+                                hourlyWeather[f] = [];
+                                hourlyWeather[f]['Hour'] = hrHour;
+                                hourlyWeather[f]['AMPM'] = hrampm;
+                                hourlyWeather[f]['Temp'] = hrTemp;
+                                hourlyWeather[f]['Condition'] = hrCondition;
+                                hourlyWeather[f]['Icon'] = hriconurl;
+                                hourlyWeather[f]['PoP'] = hrPop;
+                                console.log(hriconurl);
+                                if (f<7){
+                                    curElements = ['hourlytime' + f,'hourlytemp' + f,'hourlycondition' + f,'hourlyicon' + f, 'hourlypop' + f];
+                                    console.log(curElements);
+                                    
+                                    document.getElementById(curElements[1]).innerHTML = hourlyWeather[f]['Hour'] + hourlyWeather[f]['AMPM']
+                                    document.getElementById(curElements[2]).innerHTML = hourlyWeather[f]['Temp'] + '°F'
+                                    document.getElementById(curElements[3]).innerHTML = hourlyWeather[f]['Condition']
+                                    document.getElementById(curElements[4]).innerHTML = hourlyWeather[f]['Icon']
+                                    document.getElementById(curElements[4]).innerHTML = hourlyWeather[f]['PoP'] + '%'
+                                }
+                                //console.log(hrPop);
+                                //console.log(hrampm);
+                                //console.log(hrCondition);
+                                //console.log(hrTemp);
+                                //console.log(hrHour);
                             } 
                         }
                     }); 
