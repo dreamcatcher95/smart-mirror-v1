@@ -24,6 +24,21 @@
             #time{
                 font-size: 4em;
             }
+            .forecastdate{
+                font-size: 1.8em;
+            }
+            .forecasttemp{
+                font-size: 1.5em;
+            }
+            .forecastcondition{
+                font-size: 1.6em;
+            }
+            .forecastpop{
+                font-size: 1.4em;
+            }
+            .forecasthumidity{
+                font-size: 1.4em;
+            }
             .currentWeather{
                 text-align: right;
             }
@@ -47,7 +62,7 @@
                 padding:0;
             }
             .icon{ 
-                float: left;
+                /**float: left;**/
                 font-size:1.5em;
             }
             .hourlyTime {
@@ -93,9 +108,10 @@
           
             //hourlyWeatherCall();
             //currentWeatherCall();
+            forecastWeatherCall();
                 function hourlyWeatherCall(){
                     $.ajax({
-                        url: "http://api.wunderground.com/api/b368a60727ec442f/hourly/q/pws:KGAATLAN214.json",
+                        url: "http://api.wunderground.com/api/b368a60727ec442f/hourly/q/pws:KGAATLAN215.json",
                         dataType : "jsonp",
                         success : function(parsed_json) {
                             var hrforecast = parsed_json['hourly_forecast'];
@@ -121,11 +137,11 @@
                                 
                                     curElements = ['hourlytime' + f,'hourlytemp' + f,'hourlycondition' + f,'hourlyicon' + f, 'hourlypop' + f];
                                                                         
-                                    document.getElementById(curElements[0]).innerHTML = hrHour + hrampm
-                                    document.getElementById(curElements[1]).innerHTML = 'Feels like: ' + hrTemp + '°F'
-                                    document.getElementById(curElements[2]).innerHTML = hrCondition
+                                    document.getElementById(curElements[0]).innerHTML = hrHour + hrampm;
+                                    document.getElementById(curElements[1]).innerHTML = 'Feels like: ' + hrTemp + '°F';
+                                    document.getElementById(curElements[2]).innerHTML = hrCondition;
                                     //document.getElementById(curElements[3]).innerHTML = hriconurl
-                                    document.getElementById(curElements[4]).innerHTML = 'Chance of Precip: ' + hrPop + '%'
+                                    document.getElementById(curElements[4]).innerHTML = 'Chance of Precip: ' + hrPop + '%' + hriconurl;
                                 }
                             } 
                         }
@@ -135,32 +151,51 @@
                  
                 function forecastWeatherCall() {
                     $.ajax({
-                        url: "http://api.wunderground.com/api/b368a60727ec442f/forecast/q/pws:KGAATLAN214.json",
+                        url: "http://api.wunderground.com/api/b368a60727ec442f/forecast/q/pws:KGAATLAN215.json",
                         dataType : "jsonp",
                         success : function(parsed_json) {
                             var thrforecast = parsed_json['forecast']['simpleforecast']['forecastday'];
                             console.log(thrforecast);
+                            var e = 0;
                             for (index in thrforecast) {
-                                //date
-                                var thrday = thrforecast[index]['date']['weekday_short']+".";
-                                var thrmonth = thrforecast[index]['date']['monthname_short']+".";
-                                var thrdate = thrforecast[index]['date']['day'];
-                                //condition
-                                var thrcondition = thrforecast[index]['conditions'];
-                                //hightemp
-                                var thrhigh = thrforecast[index]['high']['fahrenheit'];
-                                //lowtemp
-                                var thrlow = thrforecast[index]['low']['fahrenheit'];
-                                //humidity
-                                var thrhumidity = thrforecast[index]['avehumidity'];
-                                //icon
-                                var thriconurl = thrforecast[index]['icon_url'];
-                                thriconurl = thriconurl.split("/");
-                                thriconurl = thriconurl[6];
-                                thriconurl = thriconurl.split(".");
-                                thriconurl = thriconurl[0];
-                                //chance of precip
-                                var thrpop = thrforecast[index]['pop'];
+                                e=e+1;
+                                if (e<4){
+                                    //date
+                                    var thrday = thrforecast[index]['date']['weekday_short'];
+                                    var thrmonth = thrforecast[index]['date']['monthname_short'];
+                                    var thrdate = thrforecast[index]['date']['day'];
+                                    //condition
+                                    var thrcondition = thrforecast[index]['conditions'];
+                                    //hightemp
+                                    var thrhigh = '↑ ' + thrforecast[index]['high']['fahrenheit'] + '°F | ';
+                                    //lowtemp
+                                    var thrlow = '↓ ' + thrforecast[index]['low']['fahrenheit'] + '°F';
+                                    //humidity
+                                    var thrhumidity = thrforecast[index]['avehumidity'];
+                                    //icon
+                                    var thriconurl = thrforecast[index]['icon_url'];
+                                    thriconurl = thriconurl.split("/");
+                                    thriconurl = thriconurl[thriconurl.length-1];
+                                    thriconurl = thriconurl.split(".");
+                                    thriconurl = thriconurl[0];
+                                    //chance of precip
+                                    var thrpop = thrforecast[index]['pop'];
+
+                                    
+                                    var datediv = 'thrdate' + e;
+                                    var tempdiv = 'thrtemp' + e;
+                                    var conditiondiv = 'thrcondition' + e;
+                                    var popdiv = 'thrpop' + e;
+                                    var humiditydiv = 'thrhumid' + e;
+                                    var icondiv = 'thricon' + e;
+                                    
+                                    document.getElementById(datediv).innerHTML = thrday + ', ' + thrmonth + '. ' +thrdate;
+                                    document.getElementById(conditiondiv).innerHTML = thrcondition;
+                                    document.getElementById(tempdiv).innerHTML = thrhigh + thrlow;
+                                    document.getElementById(popdiv).innerHTML = 'Precipitation: ' + thrpop + '%';
+                                    document.getElementById(humiditydiv).innerHTML = 'Humidity: ' + thrhumidity +'%' + thriconurl;
+                                    
+                                }
                             } 
                         }
                     }); 
@@ -168,7 +203,7 @@
                 
                 function currentWeatherCall() {
                     $.ajax({
-                        url: "http://api.wunderground.com/api/b368a60727ec442f/conditions/q/pws:KGAATLAN214.json",
+                        url: "http://api.wunderground.com/api/b368a60727ec442f/conditions/q/pws:KGAATLAN215.json",
                         dataType : "jsonp",
                         success : function(parsed_json) {
                             var curforecast = parsed_json['current_observation'];
@@ -372,15 +407,30 @@
                 </div>
                 <div class="row" style="height:27vh;">
                     <div class="col-sm-5">
-                    <div id="day1" class="row dailyforecast" style="height:9vh;">
-                    Thurs, Jan. 25, 2017
-                    </div>
-                    <div id="day1" class="row dailyforecast" style="height:9vh;">
-                    Thurs, Jan. 26, 2017
-                    </div>
-                    <div id="day1" class="row dailyforecast" style="height:9vh;">
-                    Thurs, Jan. 26, 2017
-                    </div>
+                        <div id="day1" class="row dailyforecast" style="height:9vh;">
+                            <div id="thrdate1" class="forecastdate">Thurs, Jan. 25, 2017</div>
+                            <i id="thricon1" class="icon wi wi-night-rain" style="float:right; padding-right:55px; font-size:3.9em;"></i>
+                            <div id="thrcondition1" class="forecastcondition">Mostly Cloudy</div>
+                            <div id="thrtemp1" class="forecasttemp">Hi: 86F | Lo: 45F</div>
+                            <div id="thrpop1" class="forecastpop">Precipitation: 54%</div>
+                            <div id="thrhumid1" class="forecasthumidity">Humidity: 54%</div>                            
+                        </div>
+                        <div id="day2" class="row dailyforecast" style="height:9vh;">
+                            <div id="thrdate2" class="forecastdate">Thurs, Jan. 25, 2017</div>
+                            <i id="thricon2" class="icon wi wi-night-rain" style="float:right; padding-right:55px; font-size:3.9em;"></i>
+                            <div id="thrcondition2" class="forecastcondition">Mostly Cloudy</div> 
+                            <div id="thrtemp2" class="forecasttemp">Hi: 86F | Lo: 45F</div>
+                            <div id="thrpop2" class="forecastpop">Precipitation: 54%</div>
+                            <div id="thrhumid2" class="forecasthumidity">Humidity: 54%</div> 
+                        </div>
+                        <div id="day3" class="row dailyforecast" style="height:9vh;">
+                            <div id="thrdate3" class="forecastdate">Thurs, Jan. 25, 2017</div>
+                            <i id="thricon3" class="icon wi wi-night-rain" style="float:right; padding-right:55px; font-size:3.9em;"></i>
+                            <div id="thrcondition3" class="forecastcondition">Mostly Cloudy</div> 
+                            <div id="thrtemp3" class="forecasttemp">Hi: 86F | Lo: 45F</div>
+                            <div id="thrpop3" class="forecastpop">Precipitation: 54%</div>
+                            <div id="thrhumid3" class="forecasthumidity">Humidity: 54%</div> 
+                        </div>
                     </div>
                   <div class="col-sm-5" style="float:right;height:27vh;">Todays Events</div>
                 </div>
